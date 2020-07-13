@@ -7,7 +7,7 @@ Simple CUDA implementation of the DSMC method
 - [x] Python wrapper to initialise simulations and request results from CUDA core
 - [x] Arbitrary external potential. Defined in Python, compiled and loaded on the GPU at runtime using the CUDA driver API
 - [x] Basic AMR on GPU based on particles density
-- [ ] Particles inflows/outflows
+- [ ] Particle inflows/outflows
 - [ ] Adaptative timestep
 - [ ] Multiple species
 
