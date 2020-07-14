@@ -16,6 +16,3 @@ Simple CUDA implementation of the DSMC method
 - [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) (version 3.0 or higher)
 - [NumPy](https://numpy.org/)
 - [Sympy](https://www.sympy.org/en/index.html)
-- [Jinja2](https://jinja.palletsprojects.com/en/2.11.x/)
-- [pybind11](https://github.com/pybind/pybind11)
-
