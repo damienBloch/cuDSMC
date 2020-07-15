@@ -20,6 +20,33 @@ For ease of manipulation, the simulation can be fully set up from a Python inter
 - [NumPy](https://numpy.org/)
 - [Sympy](https://www.sympy.org/en/index.html)
 
-## How to build 
+## How to use
+
+Download from github 
+
+```
+git clone https://github.com/damienBloch/cuDSMC
+```
+
+Create build folder
+
+```
+cd cuDSMC
+mkdir obj
+```
+
+Compile C++ and CUDA sources (requires nvcc and CUDA toolkit)
+
+```
+cd src
+make
+```
+
+This will create a python package that can be like any other package, either by placing it in the same directory as the python script or by installing it with pip
+
+```
+cd ..
+pip install DSMC
+```
 
 
