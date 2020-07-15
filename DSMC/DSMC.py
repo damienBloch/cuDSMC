@@ -29,6 +29,8 @@ class DSMC(object):
             Must contain keys "mass","number" and "cross-section" assigned to the relevant values
         t0 : float,optional
             Initial time
+        device : int,optional
+            Select the GPU on which to run the simulation. Make it possible to launch several simulations on the same device (assuming enough memory) or to launch simulations on several devices. The latter case should be used with multiple cpu processes, because the update on one gpu is blocking the cpu flow until the simulation has been evolved. 
         """
         self.t=t0
         self.cuDSMC=cuDSMC(np.reshape(r0,3*len(r0[0]),order="F"),np.reshape(v0,3*len(v0[0]),order="F"),t0,device)
