@@ -39,7 +39,7 @@ Compile C++ and CUDA sources (requires nvcc and CUDA toolkit)
 
 ```
 cd src
-make
+make -j4
 ```
 
 This will create a python package that can be like any other package, either by placing it in the same directory as the python script or by installing it with pip
