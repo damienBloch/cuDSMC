@@ -10,6 +10,7 @@
 #include<curand_kernel.h>
 #include<thrust/device_vector.h>
 #include<thrust/host_vector.h>
+#include<thrust/copy.h>
 #include"helper_math.h"
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true) {
@@ -18,6 +19,8 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
       exit(code);
    }
 }
+
+#define PTR(a) thrust::raw_pointer_cast(&a[0])
 
 #define CUDA_SAFE_CALL(x)                                         \
   do {                                                            \

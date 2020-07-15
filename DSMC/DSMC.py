@@ -41,16 +41,12 @@ class DSMC(object):
     def positions(self):
         r=self.cuDSMC.getPositions()
         return np.reshape(r,(3,len(r)//3),order="F")
-
-    def getPositions(self):
-        r=self.cuDSMC.getPositions()
-        return np.reshape(r,(3,len(r)//3),order="F")
-    def getPotential(self):
-        return self.advection_tpl
-    
-    def getSpeeds(self):
+    @property
+    def velocities(self):
         v=self.cuDSMC.getSpeeds()
         return np.reshape(v,(3,len(v)//3),order="F")
+    def getPotential(self):
+        return self.advection_tpl
     def advection(self,t):
         self.t=self.cuDSMC.advection(t)
         return self.t

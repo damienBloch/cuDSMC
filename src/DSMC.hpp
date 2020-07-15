@@ -19,7 +19,6 @@ class DSMC {
 		double getTime(){return m_t;};
 		py::array_t<gridCell> getGrid();
 		py::array_t<unsigned int> makeHistogram(double min_x,double max_x, int NX,double min_y,double max_y, int NY,double min_z,double max_z, int NZ);	
-		void energy();
 		void setParameters(double mass,double number, double cross_section)
 		{m_m=mass;m_NP=number;m_cs=cross_section;};
 		int deviceNumber(void);
@@ -28,7 +27,7 @@ class DSMC {
 		void initCuda(int device);
 		double m_t;
 		unsigned int m_NT;
-		thrust::device_vector<double> mPositionArray;
+		thrust::device_vector<double> mPositionArray,mVelocityArray;
 		double *m_r, *m_v;
 		struct module{
 			bool moduleLoaded=false;
@@ -36,11 +35,9 @@ class DSMC {
 			CUfunction kernel;
 			int minGridSize,blockSize;
 		};
-		CUfunction m_energyKernel;
 		module m_advection;
 		CUcontext mCuContext;
 		Grid *m_grid=NULL;
-		double *m_energy=NULL;
 		double m_m,m_NP,m_cs;
 };
 

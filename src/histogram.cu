@@ -30,33 +30,19 @@ void __global__ setID(unsigned int* cells, int N)
 Histogram::Histogram(double min_x,double max_x, int NX,double min_y,double max_y, int NY,double min_z,double max_z, int NZ):
 min_x(min_x),max_x(max_x),NX(NX),min_y(min_y),max_y(max_y),NY(NY),min_z(min_z),max_z(max_z),NZ(NZ)
 {
-	m_hist=NULL;
-	gpuErrchk(cudaMallocManaged(&m_hist,NX*NY*NZ*sizeof(unsigned int)));
+	mHist=thrust::device_vector<unsigned int>(NX*NY*NZ);
 }
 
-Histogram::~Histogram()
+thrust::device_vector<unsigned int>& Histogram::bin(thrust::device_vector<double> r)
 {
-	if(m_hist!=NULL)
-		gpuErrchk(cudaFree(m_hist));
-}
-
-unsigned int* Histogram::bin(double* r, int N)
-{
-	unsigned int *keys=NULL;
-	gpuErrchk(cudaMallocManaged(&keys,N*sizeof(int)));
+	unsigned int N=r.size()/3;
+	thrust::device_vector<unsigned int> keys(N);
 	
-	setKeys<<<N,1>>>(r,keys,N,min_x,max_x,NX,min_y,max_y,NY,min_z,max_z,NZ);
-	thrust::device_ptr<unsigned int> d_keys(keys);
-	thrust::device_ptr<unsigned int> d_hist(m_hist);
-	thrust::sort(thrust::device,d_keys,d_keys+N);
-	setID<<<NX*NY*NZ,1>>>(m_hist,NX*NY*NZ);
-	thrust::upper_bound(thrust::device,d_keys,d_keys+N,d_hist,d_hist+NX*NY*NZ,d_hist);
-	thrust::adjacent_difference(thrust::device,d_hist,d_hist+NX*NY*NZ,d_hist);
-
+	setKeys<<<N,1>>>(PTR(r),PTR(keys),N,min_x,max_x,NX,min_y,max_y,NY,min_z,max_z,NZ);
+	thrust::sort(thrust::device,keys.begin(),keys.end());
+	setID<<<NX*NY*NZ,1>>>(PTR(mHist),NX*NY*NZ);
+	thrust::upper_bound(thrust::device,keys.begin(),keys.end(),mHist.begin(),mHist.end(),mHist.begin());
+	thrust::adjacent_difference(thrust::device,mHist.begin(),mHist.end(),mHist.begin());
 	cudaDeviceSynchronize();
-
-	if(keys!=NULL)
-		gpuErrchk(cudaFree(keys));
-	cudaDeviceSynchronize();
-	return m_hist;
+	return mHist;
 }
