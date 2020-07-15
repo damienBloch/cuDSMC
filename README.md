@@ -1,5 +1,6 @@
 # cuDSMC
 Simple CUDA implementation of the DSMC method.
+
 This code was written to compare with some cold atoms experiments (thermalisation, evaporation, ...). In these situations, collisions are easier to handle (simple interactions, no complex chemistry) but the external potential depends on the experimental implementation. 
 For ease of manipulation, the simulation can be fully set up from a Python interface, while still providing the higher performances of CUDA enabled GPUs. 
 
