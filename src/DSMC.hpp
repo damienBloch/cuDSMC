@@ -9,7 +9,7 @@
 namespace py = pybind11;
 class DSMC {
 	public:
-		DSMC(py::array_t<double>& r,py::array_t<double>& v,double t0);
+		DSMC(py::array_t<double>& r,py::array_t<double>& v,double t0,int device);
 		double advection(double t);
 		py::array_t<double> getPositions();
 		py::array_t<double> getSpeeds();
@@ -22,10 +22,13 @@ class DSMC {
 		void energy();
 		void setParameters(double mass,double number, double cross_section)
 		{m_m=mass;m_NP=number;m_cs=cross_section;};
+		int deviceNumber(void);
 
 	private:
+		void initCuda(int device);
 		double m_t;
 		unsigned int m_NT;
+		thrust::device_vector<double> mPositionArray;
 		double *m_r, *m_v;
 		struct module{
 			bool moduleLoaded=false;
@@ -35,16 +38,17 @@ class DSMC {
 		};
 		CUfunction m_energyKernel;
 		module m_advection;
-		CUcontext m_cuContext;
+		CUcontext mCuContext;
 		Grid *m_grid=NULL;
 		double *m_energy=NULL;
 		double m_m,m_NP,m_cs;
 };
 
-
 PYBIND11_MODULE(cuDSMC, m) {
+	m.def("cudaDeviceGetCount",&cudaDeviceGetCount);
+	m.def("cudaInit",&cudaInit);
 	py::class_<DSMC>(m, "DSMC")
-		.def(py::init<py::array_t<double>&,py::array_t<double>&,double>())
+		.def(py::init<py::array_t<double>&,py::array_t<double>&,double,int>())
 		.def("getPositions", &DSMC::getPositions,py::return_value_policy::take_ownership)
 		.def("getSpeeds", &DSMC::getSpeeds,py::return_value_policy::take_ownership)
 		.def("advection", &DSMC::advection)
@@ -58,5 +62,6 @@ PYBIND11_MODULE(cuDSMC, m) {
 		PYBIND11_NUMPY_DTYPE(double3, x, y,z);
 		PYBIND11_NUMPY_DTYPE(gridCell, number, level,rmin,rmax,cellStartId,cellEndId,id,maxVr);
 }
+
 
 #endif

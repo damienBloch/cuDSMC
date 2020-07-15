@@ -1,14 +1,22 @@
 #include"DSMC.hpp"
 
-DSMC::DSMC(py::array_t<double>& r,py::array_t<double>& v,double t0)
+
+
+void DSMC::initCuda(int device)
 {
-	//init CUDA driver API & automatic runtime context selection
+	if(device>=cudaDeviceGetCount())throw std::runtime_error("Device number "+std::to_string(device)+" exceeds the number of available devices "+std::to_string(cudaDeviceGetCount()));
+
 	CUdevice cuDevice;
-	CUDA_SAFE_CALL(cuInit(0));
-	CUDA_SAFE_CALL(cuDeviceGet(&cuDevice, 0));
-	CUDA_SAFE_CALL(cuCtxCreate(&m_cuContext, 0, cuDevice));
-	cudaSetDevice(0);
+	CUDA_SAFE_CALL(cuDeviceGet(&cuDevice, device));
+
+	CUDA_SAFE_CALL(cuCtxCreate(&mCuContext, 0, cuDevice));
+	cudaSetDevice(device);
 	cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth,gridDepth);
+}
+
+DSMC::DSMC(py::array_t<double>& r,py::array_t<double>& v,double t0,int device)
+{
+	initCuda(device);
 
 	//check if position & speed dimensions are ok 
 	py::buffer_info buf_r = r.request();
@@ -83,7 +91,7 @@ DSMC::~DSMC()
 		CUDA_SAFE_CALL(cuModuleUnload(m_advection.module));
 	if(m_grid!=NULL)
 		delete m_grid;
-	CUDA_SAFE_CALL(cuCtxDestroy(m_cuContext));
+	CUDA_SAFE_CALL(cuCtxDestroy(mCuContext));
 }
 
 

@@ -8,6 +8,8 @@
 #include<cuda_runtime.h>
 #include<stdexcept>
 #include<curand_kernel.h>
+#include<thrust/device_vector.h>
+#include<thrust/host_vector.h>
 #include"helper_math.h"
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true) {
@@ -30,5 +32,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
   } while(0)
 
 
+int cudaDeviceGetCount(void);
+void cudaInit(void);
 
 #endif

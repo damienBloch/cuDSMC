@@ -1,4 +1,4 @@
-import os,sys
+import os,sys,warnings
 this_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(os.path.join(this_dir, ""))
 
@@ -6,14 +6,18 @@ import numpy as np
 import sympy as sym
 from jinja2 import Template
 from .code_printer import codePrinter
-from .cuDSMC import DSMC as cuDSMC
-import os
-import warnings
 
-class DSMC:
+from .cuDSMC import cudaInit,cudaDeviceGetCount
+from .cuDSMC import DSMC as cuDSMC
+cudaInit() 
+       
+
+class DSMC(object):
     """Handler for Direct Simulation Monte-Carlo solver."""
-    
-    def __init__(self,r0,v0,parameters,t0:float=0):
+    @classmethod
+    def cudaDeviceNumber(cls):
+        return cudaDeviceGetCount()
+    def __init__(self,r0,v0,parameters,t0:float=0,device:int=0):
         """
         Parameters
         ----------
@@ -27,10 +31,14 @@ class DSMC:
             Initial time
         """
         self.t=t0
-        self.cuDSMC=cuDSMC(np.reshape(r0,3*len(r0[0]),order="F"),np.reshape(v0,3*len(v0[0]),order="F"),t0)
+        self.cuDSMC=cuDSMC(np.reshape(r0,3*len(r0[0]),order="F"),np.reshape(v0,3*len(v0[0]),order="F"),t0,device)
         self.parameters=parameters
         self.cuDSMC.setParameters(self.parameters["mass"],self.parameters["number"],self.parameters["cross-section"])
         self.advection_tpl=""
+    @property
+    def positions(self):
+        r=self.cuDSMC.getPositions()
+        return np.reshape(r,(3,len(r)//3),order="F")
 
     def getPositions(self):
         r=self.cuDSMC.getPositions()
