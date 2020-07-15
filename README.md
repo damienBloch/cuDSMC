@@ -42,7 +42,7 @@ cd src
 make -j4
 ```
 
-This will create a python package that can be like any other package, either by placing it in the same directory as the python script or by installing it with pip
+This will create a python package that can used be like any other package, either by placing it in the same directory as the python script or by installing it with pip
 
 ```
 cd ..
